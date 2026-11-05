@@ -50,7 +50,8 @@ GH_TEST_PARAMS = [
 ]
 GH_PROB_LEVELS = [0.01, 0.05, 0.2, 0.4, 0.6, 0.8, 0.95, 0.99]
 
-# --- exp_5: Normal and log-normal quantile construction ---
+# --- exp_5: Normal and log-normal quantile construction, methodology section ---
+NORMAL_TEST_PARAMS = [(0.0, 1.0), (2.0, 0.5), (-1.0, 3.0)]  # (mu, sigma)
 LOGNORMAL_TEST_PARAMS = [(1.0, 0.25), (2.0, 0.5), (1.0, 1.0)]  # (sigma=median, a=log-sd)
 NORMAL_PROB_LEVELS = [0.01, 0.05, 0.2, 0.4, 0.6, 0.8, 0.95, 0.99]
 
