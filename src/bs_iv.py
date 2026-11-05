@@ -192,8 +192,8 @@ def sigma_bs_from_price_positive_k(k, cbar, T, abs_tol=2e-12, rel_tol=2e-12):
         return _bs_integrand(s, k, cbar).imag
 
     # Only the imaginary part of the integral is used (Eq. 25), but both
-    # parts are integrated so a user can inspect/verify the (expected ~0)
-    # real part if desired; the real part is not needed for sigma_BS itself.
+    # parts are integrated so the (expected ~0) real part can also be
+    # inspected; the real part is not needed for sigma_BS itself.
     imag_integral, _ = integrate.quad(imag_part, 0.0, 1.0, epsabs=abs_tol, epsrel=rel_tol)
     v = imag_integral / math.pi
     return v / math.sqrt(T)

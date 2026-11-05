@@ -115,7 +115,7 @@ def build_beta_contour(a: float, b: float, dps: int = 24, max_cells_per_side: in
     meshes eventually make it *worse* again at fixed dps=24 (rounding then
     dominates), so there is no simple way to drive it to the ~1e-15..1e-24
     accuracy achieved for the single- or non-singular cases within a
-    reasonable mesh size/runtime budget *at the nominal `dps` precision*.
+    reasonable mesh size/runtime allowance *at the nominal `dps` precision*.
 
     This residual turned out to be pure cancellation, not a mesh/truncation
     problem: repeating the exact same mesh at higher working precision (dps

@@ -1,8 +1,7 @@
 # A general technique for explicit quantile representations
 
 Reproduction of Schadner, "A general technique for explicit quantile
-representations" (indexed working paper, provider `llamacloud-index-v2`,
-2026).
+representations" (working paper, 2026).
 
 The paper gives a constructive method that writes the quantile function of a
 strictly positive, real-analytic probability density as a contour integral

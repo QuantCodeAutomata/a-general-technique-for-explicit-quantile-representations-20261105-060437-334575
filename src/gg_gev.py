@@ -88,8 +88,8 @@ def _mesh_kwargs_for(a: float, max_cells_per_side: int) -> dict:
     gives x_lo of order e^-60, not e^-60/a for small a). Away from a=1, the
     default width_factor=1.0 both resolves the (potentially very small, e.g.
     ~e^-150 for a=0.4) x_lo within max_cells_per_side and avoids needing
-    more cells than that budget allows (narrowing width_factor there instead
-    would need several times max_cells_per_side just to reach x_lo).
+    more cells than that allowance permits (narrowing width_factor there
+    instead would need several times max_cells_per_side just to reach x_lo).
     """
     a_m = mp.mpf(a)
     if abs(a_m - 1) < mp.mpf('0.5'):

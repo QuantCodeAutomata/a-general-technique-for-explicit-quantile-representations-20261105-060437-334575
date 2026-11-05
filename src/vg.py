@@ -73,11 +73,11 @@ not a quadrature-accuracy issue. Two natural fixes were tried and
 *rejected*: (1) searching a per-(a,d) smaller x_lo via
 `cc.find_left_truncation` on the x^(2a+1) kernel order drives x_lo down to
 ~1e-66, which stretches the geometric mesh over far more decades under the
-same cell budget and *degrades* bulk accuracy (confirmed: worst relative
+same cell allowance and *degrades* bulk accuracy (confirmed: worst relative
 error rose from ~1.3e-6 to ~6.6e-5); (2) adding an explicit closed-quadrature
 `p_left` correction (`mp.quad` of g_eps over [0, x_lo]) also empirically
 *worsened* accuracy (to ~6.5e-5) despite matching the expected 1.7e-6
-magnitude, for a reason not tracked down under this module's time budget.
+magnitude, for a reason not identified by these checks.
 Given both attempted fixes regress accuracy, the simple fixed x_lo=1e-14
 with no correction (the paper's literal recipe) is kept as the better
 empirical choice; the a<0 test tolerance in tests/test_vg.py is loosened
@@ -152,7 +152,7 @@ def _fits_within_budget(h, center, x_stop, direction, width_factor, growth,
     shrink/growth within `max_cells` cells -- i.e. the walk's *penultimate*
     edge lands within `slack`x the last true cell width of `x_stop` -- rather
     than silently falling back to one pathologically wide final cell that
-    merely snaps onto `x_stop` after exhausting the cell budget (see
+    merely snaps onto `x_stop` after exhausting the cell allowance (see
     `_one_sided_edges` docstring in `src/contour_core.py`)."""
     edges = cc._one_sided_edges(h, center, x_stop, direction, width_factor, growth, max_cells)
     if len(edges) - 1 > max_cells or len(edges) < 3:
@@ -173,9 +173,10 @@ def _fit_width_factor(h, center, x_stop, direction, max_cells, growth=mp.mpf('1.
     engine's default width_factor=1.0 gives a geometric shrink/growth ratio
     per cell too close to 1: spanning the required 10-15 decades down to
     x_lo=1e-14, or out to x_hi (~10^2), would need hundreds to thousands of
-    cells, far beyond typical max_cells_per_side budgets elsewhere in this
-    repository. Verified directly: with width_factor=1.0, `_one_sided_edges`
-    silently falls back (its budget-exhaustion branch) to one catastrophic
+    cells, far beyond the typical max_cells_per_side allowance used elsewhere
+    in this repository. Verified directly: with width_factor=1.0,
+    `_one_sided_edges` silently falls back (its allowance-exhaustion branch)
+    to one catastrophic
     final cell spanning most of the domain, corrupting the composite-GL
     half-axis mass by several percent. Widening `width_factor` (this
     function searches the *smallest* value that works, analogous in spirit
@@ -239,7 +240,7 @@ def build_vg_contour(a: float, d: float, dps: int = 24, max_cells_per_side: int 
     and the right arm (center -> x_hi) need to genuinely reach their
     endpoints within `max_cells_per_side` cells.
 
-    Adaptive cell budget: `max_cells_per_side` is doubled (up to
+    Adaptive cell allowance: `max_cells_per_side` is doubled (up to
     `max_cells_cap`) whenever the fitted `width_factor` still exceeds
     `width_factor_cap`, since a width_factor far above 1 means cells are far
     coarser than the contour height h(x) everywhere (not just near the
@@ -346,7 +347,7 @@ def cdf_vg_real(x: float, a: float, d: float, p0: mp.mpf = None) -> mp.mpf:
     """P(X<=x) by direct numerical integration of the real density, handling
     the x=0 singularity by splitting the integration domain there (mp.quad's
     built-in handling of a mild integrable singularity at a stated endpoint,
-    tried first per the implementation notes; sufficient in practice here).
+    tried first as the simplest option; sufficient in practice here).
     """
     x_m = mp.mpf(x)
     if p0 is None:

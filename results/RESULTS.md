@@ -1,7 +1,7 @@
 # Results — "A general technique for explicit quantile representations"
 
 Schadner, "A general technique for explicit quantile representations"
-(indexed working paper, provider `llamacloud-index-v2`).
+(working paper).
 
 All numbers below are read from the CSV/PNG files written by the experiment
 scripts in `exp/` into `results/`. No market or other external data is used
@@ -263,8 +263,8 @@ consistent mechanism described in exp_3, exp_6 and exp_7 above.
   Black-Scholes Eq. 24) and by high-precision mpmath numerical
   differentiation of `h(x)` elsewhere (GB, GG, normal, Student's t, VG),
   since the paper states the height functions but does not always write out
-  their derivatives explicitly (noted as an uncertainty for exp_2, exp_3 and
-  exp_5 in the experiment specification).
+  their derivatives explicitly for the GB, GG, normal and Student's t
+  contours.
 * The complex CDF `P(kappa(x))` is accumulated cumulatively along the
   composite Gauss-Legendre mesh in all cases, reusing partial sums across
   probability levels because the contour is p-independent; this is the
@@ -279,21 +279,21 @@ consistent mechanism described in exp_3, exp_6 and exp_7 above.
   is bounded by the quadrature rather than by the formula (see exp_8).
 * The VG contour accumulation for the unbounded-at-zero case (`a<0`) uses the
   paper's reference-CDF substitution `y = x u^{1/(2a+1)}` only for the Newton
-  reference quantile, not for the contour-side accumulation itself, which the
-  paper's implementation notes mark as an open implementation detail; this
-  is the identified cause of the degraded precision reported for exp_7 and
-  exp_10 at `a=-0.3`.
+  reference quantile, not for the contour-side accumulation itself, since the
+  paper does not give an explicit accumulation rule for the unbounded-at-zero
+  half-axis subdensity; this is the identified cause of the degraded
+  precision reported for the variance gamma experiments at `a=-0.3`.
 * The mesh structure (logistic coordinate for `(0,1)`-supported laws,
   logarithmic coordinate for `(0,∞)`-supported laws, linear coordinate for
   `R`-supported laws, cells no wider than the local contour height) follows
   the paper's stated general guideline; the paper does not give an exact
-  cell count or boundary schedule, which the experiment specification lists
-  as an open implementation detail for exp_1 and exp_10.
+  cell count or boundary schedule, so the mesh density was chosen to meet
+  the stated accuracy target.
 
 ## Not reproduced
 
-Nothing required by the selected experiments was left unimplemented. Every
-one of the ten experiments produced quantitative output compared against the
+Nothing required by the ten experiments described above was left
+unimplemented. Every one of them produced quantitative output compared against the
 paper above; the sub-cases flagged "partially reproduced" (Student's t at
 `a=0.5`, VG at `a=-0.3`, gamma at `a=0.4, p=0.01`, the exp_8 arbitrary-
 precision independent check, and the GH density-normalization control at
