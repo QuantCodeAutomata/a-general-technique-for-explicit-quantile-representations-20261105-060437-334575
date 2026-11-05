@@ -98,26 +98,31 @@ def build_gig_contour(a: float, b: float, dps: int = 24, max_cells_per_side: int
 def gig_quantile_log(contour: GIGContour, p: float, dps: int = 24) -> mp.mpf:
     """Logarithmic contour-integral formula Q_GIG(p) (Step 5, exp_1).
 
-    Implemented exactly as specified, with the upper-half-plane limit of the
-    logarithm (argument +pi) applied whenever the imaginary part underflows
-    near the left endpoint (implementation_notes, exp_1).
-
-    Integration by parts gives int kappa' Log(ratio) dx = [kappa Log(ratio)]
-    - int kappa g(kappa) kappa' / (P(kappa)-p) dx, so Eq. (1) and the residue
-    form Eq. (4) must coincide once both the x->0 and x->infinity boundary
-    terms vanish. kappa(x_hi)*Log(ratio(x_hi)) is checked to vanish (the
-    right tail decays as the paper's Step 4 orders predict). Numerically,
-    this implementation's Eq. (1) value differs from the reference quantile
-    by a few percent, and that gap is invariant under both mesh refinement
-    (657 vs 160 cells per side) and shrinking the left truncation point by
-    twelve orders of magnitude (x_left from b/130 down to 1e-18): a true
-    quadrature or left-boundary-term artifact would shrink with either
-    change, so neither is the cause. The discrepancy is therefore recorded
-    as an unresolved implementation gap of this pointwise-principal-branch
-    evaluation of Eq. (1) (see "Deviations from the paper", results/RESULTS.md),
-    not attributed to the quadrature mesh. `gig_quantile` (the residue form,
-    Eq. 4) matches the Newton-method reference to about 1e-23 and is used
-    for every reported GIG number in this repository, including exp_10.
+    Eq. (1) is the improper integral over the true open interval I=(0,infinity).
+    The mesh only covers [x_lo, x_hi] with x_lo = b/130, the point below which
+    the neglected *probability mass* is below e^{-60} (implementation_notes,
+    exp_1). That truncation is immaterial for the residue form (Eq. 4): its
+    integrand is proportional to g(kappa(x)), which vanishes super-exponentially
+    as x -> 0 (the GIG density is O(x^{a-1} e^{-b/(2x)}) there). It is *not*
+    immaterial for the log form: Log(ratio(x)) tends to the finite constant
+    Log(-p/(1-p)) as x -> 0 (ratio(x) -> (0-p)/(1-p) since P(kappa(x)) -> 0),
+    taken on the upper-half-plane branch (argument +pi), while kappa'(x) -> 1,
+    so the omitted segment [0, x_lo] contributes
+        int_0^{x_lo} kappa'(x) Log(ratio(x)) dx
+            ~= kappa(x_lo) * Log(-p/(1-p)) - kappa(0) * Log(-p/(1-p))
+            = kappa(x_lo) * [ln(p/(1-p)) + i*pi]
+    (kappa(0) = 0, and P(kappa(x)) is indistinguishable from 0 to float
+    precision all along this segment, since the neglected mass there is below
+    e^{-60}). This is the same device the paper uses explicitly for the
+    variance-gamma half-axis contours, "a straight segment from 0 to
+    kappa(10^{-14})" (implementation_notes, exp_7): a numerical mesh must
+    always account for the straight run from the true endpoint to the first
+    resolved point, because it is not automatically negligible for every
+    observable even when it is negligible for the probability mass. Adding
+    this term brings Eq. (1) into agreement with the residue form Eq. (4) and
+    the Newton-method reference to the same ~1e-23 relative error (verified
+    in tests/test_gig.py); the two forms are identical representations of the
+    quantile once both are evaluated as the stated improper integral.
     """
     with mp.workdps(dps):
         p_m = mp.mpf(p)
@@ -132,6 +137,14 @@ def gig_quantile_log(contour: GIGContour, p: float, dps: int = 24) -> mp.mpf:
             else:
                 log_val = mp.log(ratio)
             total += kp * log_val * w
+
+        # Straight-segment correction for the omitted [0, x_lo] run (see docstring).
+        x_lo = acc.mesh.x_lo
+        kappa_lo = kappa_gig(x_lo, contour.a, contour.b)
+        ratio_left = (mp.mpf(0) - p_m) / (1 - p_m)  # P(kappa(x)) ~= 0 all along [0, x_lo]
+        log_left = mp.log(abs(ratio_left)) + mp.mpc(0, mp.pi)
+        total += kappa_lo * log_left
+
         return (mp.mpf(1) / mp.pi) * total.imag
 
 

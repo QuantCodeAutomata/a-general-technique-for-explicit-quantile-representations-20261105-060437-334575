@@ -16,6 +16,20 @@ def test_gig_residue_quantile_matches_reference(a, b):
         assert cc.relative_error(q, ref) < mp.mpf('1e-15')
 
 
+@pytest.mark.parametrize("a,b", [(-0.5, 1.0), (2.0, 0.5), (0.3, 3.0)])
+def test_gig_log_form_matches_residue_form(a, b):
+    """Eq. (1) (logarithmic form, Step 5 exp_1) and Eq. (4) (residue form) are
+    equivalent representations of the quantile; both must match the
+    Newton-method reference to high precision once the straight-segment
+    contribution of the omitted [0, x_lo] run is included (see gig_quantile_log
+    docstring)."""
+    contour = gig.build_gig_contour(a, b, dps=24, max_cells_per_side=160)
+    for p in [0.01, 0.05, 0.5, 0.95, 0.99]:
+        q_log = gig.gig_quantile_log(contour, p, dps=24)
+        ref = gig.reference_quantile_gig(a, b, p, dps=30)
+        assert cc.relative_error(q_log, ref) < mp.mpf('1e-17')
+
+
 def test_gig_quantile_monotone_in_p():
     """The quantile function must be strictly increasing in p (CDF monotonicity)."""
     contour = gig.build_gig_contour(1.0, 1.0, dps=24, max_cells_per_side=120)
