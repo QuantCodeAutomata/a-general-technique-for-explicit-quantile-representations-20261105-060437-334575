@@ -1,0 +1,27 @@
+law,check,value,expected,abs_error
+"beta(0.3,0.6)",accumulated_cdf_mass,1.0,1.0,4.3711884461033055e-22
+"beta(0.3,0.6)",density_normalization,1.0,1.0,4.124862365595268e-17
+"beta(2.5,3)",accumulated_cdf_mass,1.0,1.0,3.980478582849367e-26
+"beta(2.5,3)",density_normalization,1.0,1.0,0.0
+gamma(a=0.4),accumulated_cdf_mass,1.0,1.0,5.460606653306419e-20
+gamma(a=0.4),density_normalization,1.0,1.0,2.1651503638756164e-22
+gamma(a=1)[exponential/GEV],accumulated_cdf_mass,1.0,1.0,1.2064408986045152e-19
+gamma(a=1)[exponential/GEV],density_normalization,1.0,1.0,0.0
+"GIG(a=-0.5,b=1)[inverse Gaussian]",accumulated_cdf_mass,1.0,1.0,4.2581079500418186e-27
+"GIG(a=-0.5,b=1)[inverse Gaussian]",density_normalization,1.0,1.0,0.0
+"GH(a=1,b=1.5,d=0.5)[hyperbolic]",accumulated_cdf_mass,0.9999999999999462,1.0,5.381933936235261e-14
+"GH(a=1,b=1.5,d=0.5)[hyperbolic]",density_normalization,0.9999999999999462,1.0,5.381933936262516e-14
+"GH(a=-0.5,b=2,d=1)[NIG]",accumulated_cdf_mass,0.9999999999999661,1.0,3.381926399258555e-14
+"GH(a=-0.5,b=2,d=1)[NIG]",density_normalization,0.9999999999999661,1.0,3.381926399241963e-14
+normal,accumulated_cdf_mass,1.0,1.0,1.998325963466666e-17
+normal,density_normalization,1.0,1.0,0.0
+student_t(a=0.5),accumulated_cdf_mass,0.999999998684947,1.0,1.3150529926110576e-09
+student_t(a=0.5),density_normalization,1.0,1.0,4.580572375035795e-28
+student_t(a=5),accumulated_cdf_mass,1.0,1.0,3.546847069138228e-21
+student_t(a=5),density_normalization,1.0,1.0,0.0
+"VG(a=-0.3,d=0.15)[unbounded at 0]",accumulated_cdf_mass,0.523802630569516,0.5238043810976856,1.7510907356825955e-06
+"VG(a=-0.3,d=0.15)[unbounded at 0]",accumulated_cdf_mass,0.4761938683741449,0.47619561890231443,1.7510907356766455e-06
+"VG(a=-0.3,d=0.15)[unbounded at 0]",density_normalization,0.999996500632264,1.0,3.499367736073443e-06
+"VG(a=1.5,d=0.2)[bounded at 0]",accumulated_cdf_mass,0.6452013692849993,0.6452013692850016,2.313194824926361e-15
+"VG(a=1.5,d=0.2)[bounded at 0]",accumulated_cdf_mass,0.354798630714996,0.35479863071499834,2.357311796842689e-15
+"VG(a=1.5,d=0.2)[bounded at 0]",density_normalization,0.9999999999999953,1.0,4.714330171590962e-15
