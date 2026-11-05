@@ -151,8 +151,18 @@ def _one_sided_edges(h: Callable, seed: mp.mpf, x_stop: mp.mpf, direction: int,
     edges = [seed]
     x = seed
     prev_width = None
+    # Floor the width relative to the *remaining* distance to x_stop, not to a
+    # fixed absolute constant: a fixed floor (e.g. 1e-12) stops shrinking once
+    # h(x) underflows it, turning the geometric shrink into additive steps
+    # that overshoot a target x_stop many orders of magnitude smaller (e.g.
+    # x_stop ~ 1e-70 for slowly-decaying polynomial tails such as the Beta
+    # working density with shape < 1), forcing one pathologically wide final
+    # cell. A floor tied to |x - x_stop| keeps shrinking all the way to
+    # x_stop while still guaranteeing termination within max_cells.
     for _ in range(max_cells):
-        local_width = width_factor * max(h(x), mp.mpf('1e-12'))
+        remaining = abs(x - x_stop)
+        floor = remaining * mp.mpf('1e-6')
+        local_width = width_factor * max(h(x), floor)
         if prev_width is not None:
             local_width = min(local_width, prev_width * growth)
         width = local_width
